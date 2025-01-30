@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot name="tri_finray_gripper">
-  <material name="black">
-    <color rgba="0.0 0.0 0.0 1.0"/>
-  </material>
-  <material name="white">
-    <color rgba="1.0 1.0 1.0 1.0"/>
-  </material>
-  <material name="gray">
-    <color rgba="0.5 0.5 0.5 1.0"/>
-  </material>
   <link name="base_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <box size="0.01 0.01 0.01"/>
       </geometry>
-      <material name="black"/>
     </visual>
   </link>
   <link name="finger_holder_left">
-    <visual>
+    <!-- <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://blender_models/tri_finray_gripper/meshes/wsg50_mount-finger_holder_left.obj" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
-    </visual>
+    </visual> -->
     <collision>
       <geometry>
         <box size="0.04 0.06979999499999999 0.038"/>
@@ -34,13 +24,13 @@
     </collision>
   </link>
   <link name="finger_holder_right">
-    <visual>
+    <!-- <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://blender_models/tri_finray_gripper/meshes/wsg50_mount-finger_holder_right.obj" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="gray"/>
-    </visual>
+    </visual> -->
     <collision>
       <geometry>
         <box size="0.04 0.06979999499999999 0.038"/>
@@ -52,9 +42,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://blender_models/tri_finray_gripper/meshes/soft_gripper_finger.obj" scale="0.001 0.001 0.001"/>
+        <!-- <mesh filename="package://blender_models/tri_finray_gripper/meshes/soft_gripper_finger.obj" scale="0.001 0.001 0.001"/> -->
+        <mesh filename="package://blender_models/tri_finray_gripper/meshes/one_piece_wide_grasp_finray_finger.obj" scale="1 1 1"/>
       </geometry>
-      <material name="white"/>
     </visual>
     <collision>
       <geometry>
@@ -67,9 +57,9 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0.0 0"/>
       <geometry>
-        <mesh filename="package://blender_models/tri_finray_gripper/meshes/soft_gripper_finger.obj" scale="0.001 0.001 0.001"/>
+        <!-- <mesh filename="package://blender_models/tri_finray_gripper/meshes/soft_gripper_finger.obj" scale="0.001 0.001 0.001"/> -->
+        <mesh filename="package://blender_models/tri_finray_gripper/meshes/one_piece_wide_grasp_finray_finger.obj" scale="1 1 1"/>
       </geometry>
-      <material name="white"/>
     </visual>
     <collision>
       <geometry>

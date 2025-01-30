@@ -42,14 +42,6 @@ directives:
 - add_weld:
     parent: wsg::finray_attach
     child: finray::base_link
-- add_model:
-    name: floor
-    file: package://manipulation/floor.sdf
-- add_weld:
-    parent: world
-    child: floor::box
-    X_PC:
-        translation: [0, 0, -.5]
 
 - add_model:
     name: ball_1
