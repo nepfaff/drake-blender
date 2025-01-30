@@ -43,8 +43,12 @@ from pydrake.systems.sensors import (
     PixelType,
 )
 from pydrake.visualization import VideoWriter
-from python import runfiles
+from pydrake.all import StartMeshcat
+
+# from python import runfiles
 import tqdm
+from manipulation.station import MakeHardwareStation, LoadScenario
+from functools import partial
 
 
 @dc.dataclass
@@ -64,14 +68,14 @@ class Scenario:
     cameras: typing.Mapping[str, CameraConfig] = dc.field(default_factory=dict)
 
 
-def _find_resource(bazel_path):
-    """Looks up the path to "runfiles" data, as organized by Bazel."""
-    manifest = runfiles.Create()
-    location = manifest.Rlocation(bazel_path)
-    assert location is not None, f"Not a resource: {bazel_path}"
-    result = Path(location)
-    assert result.exists(), f"Missing resource: {bazel_path}"
-    return result
+# def _find_resource(bazel_path):
+#     """Looks up the path to "runfiles" data, as organized by Bazel."""
+#     manifest = runfiles.Create()
+#     location = manifest.Rlocation(bazel_path)
+#     assert location is not None, f"Not a resource: {bazel_path}"
+#     result = Path(location)
+#     assert result.exists(), f"Missing resource: {bazel_path}"
+#     return result
 
 
 class _ProgressBar:
@@ -91,45 +95,56 @@ def _run(args):
         schema=Scenario, filename=args.scenario_file, defaults=Scenario()
     )
 
-    # Create the scene.
-    builder = DiagramBuilder()
-    plant, scene_graph = AddMultibodyPlant(
-        config=MultibodyPlantConfig(), builder=builder
-    )
-    added_models = ProcessModelDirectives(
-        directives=ModelDirectives(directives=scenario.directives), plant=plant
-    )
-    plant.Finalize()
-
-    # Add the camera(s).
     video_writers = []
     for _, camera in scenario.cameras.items():
-        if args.still:
-            camera.show_rgb = False
-        name = camera.name
-        ApplyCameraConfig(config=camera, builder=builder)
-        sensor = builder.GetSubsystemByName(f"rgbd_sensor_{name}")
-        if args.still:
-            writer = builder.AddSystem(ImageWriter())
-            writer.DeclareImageInputPort(
-                pixel_type=PixelType.kRgba8U,
-                port_name="color_image",
-                file_name_format=f"./{name}",
-                publish_period=1.0,
-                start_time=0.0,
+        writer = VideoWriter(
+            filename=f"{camera.name}.mp4",
+            fps=16,
+            backend="cv2",
+        )
+        video_writers.append(writer)
+
+    def prebuild_callback(builder, video_writers):
+        # Add the camera(s).
+        for camera, writer in zip(scenario.cameras.values(), video_writers):
+            if args.still:
+                camera.show_rgb = False
+            name = camera.name
+            sensor = builder.GetSubsystemByName(f"rgbd_sensor_{name}")
+            if args.still:
+                writer = builder.AddSystem(ImageWriter())
+                writer.DeclareImageInputPort(
+                    pixel_type=PixelType.kRgba8U,
+                    port_name="color_image",
+                    file_name_format=f"./{name}",
+                    publish_period=1.0,
+                    start_time=0.0,
+                )
+                builder.Connect(
+                    sensor.GetOutputPort("color_image"),
+                    writer.GetInputPort("color_image"),
+                )
+            else:
+                builder.AddSystem(writer)
+                writer.ConnectRgbdSensor(builder=builder, sensor=sensor)
+
+    # Create the scene.
+    meshcat = StartMeshcat()
+    station = MakeHardwareStation(
+        scenario=LoadScenario(filename=args.scenario_file),
+        meshcat=meshcat,
+        package_xmls=[
+            os.path.join(
+                os.path.dirname(__file__), "../blender_models/package.xml"
             )
-            builder.Connect(
-                sensor.GetOutputPort("color_image"),
-                writer.GetInputPort("color_image"),
-            )
-        else:
-            writer = VideoWriter(filename=f"{name}.mp4", fps=16, backend="cv2")
-            builder.AddSystem(writer)
-            writer.ConnectRgbdSensor(builder=builder, sensor=sensor)
-            video_writers.append(writer)
+        ],
+        prebuild_callback=partial(
+            prebuild_callback, video_writers=video_writers
+        ),
+    )
 
     # Create the simulator.
-    simulator = Simulator(builder.Build())
+    simulator = Simulator(station)
     ApplySimulatorConfig(scenario.simulator_config, simulator)
 
     # Simulate.
@@ -174,15 +189,15 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.scenario_file is None:
-        scenario_file = _find_resource("drake_blender/examples/ball_bin.yaml")
-        setattr(args, "scenario_file", scenario_file)
+    # if args.scenario_file is None:
+    #     scenario_file = _find_resource("drake_blender/examples/ball_bin.yaml")
+    #     setattr(args, "scenario_file", scenario_file)
 
     # Launch the server (if requested).
     if args.server:
         logging.info("Starting drake-blender server")
-        server = _find_resource("drake_blender/server")
-        blend_file = _find_resource("color_attribute_painting/file/downloaded")
+        # server = _find_resource("drake_blender/server")
+        # blend_file = _find_resource("color_attribute_painting/file/downloaded")
         log_file = open(os.environ["TMPDIR"] + "/server-log.txt", "w")
         # TODO(jwnimmer-tri) Echo the log file to the console.
         command = [

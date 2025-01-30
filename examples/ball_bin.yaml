@@ -2,72 +2,130 @@
 simulation_duration: 2.0
 directives:
 - add_model:
-    name: bin
-    file: package://drake_models/manipulation_station/bin.sdf
+    name: iiwa
+    file: package://drake_models/iiwa_description/sdf/iiwa14_polytope_collision.sdf
+    default_joint_positions:
+        iiwa_joint_1: [0]
+        iiwa_joint_2: [-0.5]
+        iiwa_joint_3: [0]
+        iiwa_joint_4: [-1.5]
+        iiwa_joint_5: [0]
+        iiwa_joint_6: [ 1.6]
+        iiwa_joint_7: [0]
 - add_weld:
     parent: world
-    child: bin::bin_base
+    child: iiwa::iiwa_link_0
     X_PC:
-      translation: [0, 0, 0.20]
+      translation: [0, 0, 0]
+      rotation: !Rpy { deg: [0.0, 0.0, -60.0] }
+# - add_model:
+#     name: wsg
+#     file: package://wsg_description/urdf/wsg50_110_no_fingers_box_collision.urdf
+- add_model:
+    name: wsg
+    file: package://drake_models/wsg_50_description/sdf/schunk_wsg_50_no_tip.sdf
+- add_frame:
+    name: iiwa::wsg_attach
+    X_PF:
+      base_frame: iiwa::iiwa_link_7
+      translation: [0, 0, 0.09]
+      rotation: !Rpy { deg: [-90.0, 0.0, 90.]}
+- add_weld:
+    parent: iiwa::wsg_attach
+    child: wsg::body
+- add_frame:
+    name: wsg::finray_attach
+    X_PF:
+      base_frame: wsg::body
+      translation: [0, -0.08, 0.00]
+      rotation: !Rpy { deg: [0.0, 0.0, 0.0]}
+- add_model:
+    name: finray
+    file: package://blender_models/tri_finray_gripper/finray_finger_assembly_box_collision_2.urdf
+- add_weld:
+    parent: wsg::finray_attach
+    child: finray::base_link
+- add_model:
+    name: floor
+    file: package://manipulation/floor.sdf
+- add_weld:
+    parent: world
+    child: floor::box
+    X_PC:
+        translation: [0, 0, -.5]
+
 - add_model:
     name: ball_1
     file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.08, 0.01, 0.3] } }
-- add_model:
-    name: ball_2
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.07, 0.02, 0.6] } }
-- add_model:
-    name: ball_3
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.06, 0.03, 0.9] } }
-- add_model:
-    name: ball_4
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.05, 0.04, 1.2] } }
-- add_model:
-    name: ball_5
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.04, 0.05, 1.5] } }
-- add_model:
-    name: ball_6
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.03, 0.06, 1.8] } }
-- add_model:
-    name: ball_7
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.02, 0.07, 2.1] } }
-- add_model:
-    name: ball_8
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.01, 0.08, 2.4] } }
-- add_model:
-    name: ball_9
-    file: package://drake_models/manipulation_station/sphere.sdf
-    default_free_body_pose: { base_link: { translation: [0.00, 0.09, 2.7] } }
+    default_free_body_pose: { base_link: { translation: [0.08, 0.01, 30] } }
+# - add_model:
+#     name: ball_2
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.07, 0.02, 0.6] } }
+# - add_model:
+#     name: ball_3
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.06, 0.03, 0.9] } }
+# - add_model:
+#     name: ball_4
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.05, 0.04, 1.2] } }
+# - add_model:
+#     name: ball_5
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.04, 0.05, 1.5] } }
+# - add_model:
+#     name: ball_6
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.03, 0.06, 1.8] } }
+# - add_model:
+#     name: ball_7
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.02, 0.07, 2.1] } }
+# - add_model:
+#     name: ball_8
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.01, 0.08, 2.4] } }
+# - add_model:
+#     name: ball_9
+#     file: package://drake_models/manipulation_station/sphere.sdf
+#     default_free_body_pose: { base_link: { translation: [0.00, 0.09, 2.7] } }
 cameras:
-  blender_camera:
-    name: blender_camera
-    renderer_name: blender
-    renderer_class: !RenderEngineGltfClientParams
-      base_url: http://127.0.0.1:8000
-    width: 1024
-    height: 1024
-    fps: 8.0
-    X_PB:
-      translation: [-4.0, -3.2, 4.8]
-      rotation: !Rpy { deg: [-130, 5, -55] }
-  vtk_camera:
-    name: vtk_camera
-    renderer_name: vtk
-    renderer_class: !RenderEngineVtkParams
-      backend: EGL
-    # For `show_rgb: True` you must also set the `backend: GLX` on prior line
-    # and be running locally with an Xorg display server available.
-    show_rgb: False
-    width: 1024
-    height: 1024
-    fps: 8.0
-    X_PB:
-      translation: [-4.0, -3.2, 4.8]
-      rotation: !Rpy { deg: [-130, 5, -55] }
+    blender_camera:
+        name: blender_camera
+        renderer_name: blender
+        renderer_class: !RenderEngineGltfClientParams
+            base_url: http://127.0.0.1:8000
+        width: 1024
+        height: 1024
+        focal: !FovDegrees { x: 40 }
+        fps: 8.0
+        X_PB:
+            translation: [2.0, 0.0, 0.5]
+            # rotation: !Rpy { deg: [90, 0, 90] } # Blender
+            rotation: !Rpy { deg: [-90.0, 0.0, 90.0] } # OpenCV
+    # blender_camera1:
+    #     name: blender_camera1
+    #     renderer_name: blender # Reuses the existing renderer with the same name
+    #     width: 1024
+    #     height: 1024
+    #     fps: 8.0
+    #     X_PB:
+    #         translation: [-4.0, -3.2, 4.8]
+    #         rotation: !Rpy { deg: [-130, 5, -55] }
+    vtk_camera:
+        name: vtk_camera
+        renderer_name: vtk
+        renderer_class: !RenderEngineVtkParams
+            backend: EGL
+        # For `show_rgb: True` you must also set the `backend: GLX` on prior line
+        # and be running locally with an Xorg display server available.
+        show_rgb: False
+        width: 1024
+        height: 1024
+        focal: !FovDegrees { x: 40 }
+        fps: 8.0
+        # background: !Rgba { rgba: [0, 0, 0, 1] } # Not sure why it doesn't like !Rgba...
+        X_PB:
+            translation: [2.0, 0.0, 0.5]
+            rotation: !Rpy { deg: [-90.0, 0.0, 90.0] }
