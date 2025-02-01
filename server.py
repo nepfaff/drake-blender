@@ -95,11 +95,16 @@ class Blender:
     """
 
     def __init__(
-        self, *, blend_file: Path = None, bpy_settings_file: Path = None
+        self,
+        *,
+        blend_file: Path = None,
+        bpy_settings_file: Path = None,
+        export_scenes: bool = False,
     ):
         self._blend_file = blend_file
         self._bpy_settings_file = bpy_settings_file
         self._client_objects = None
+        self._export_scenes = export_scenes
 
     def reset_scene(self):
         """
@@ -228,6 +233,15 @@ class Blender:
             scene.display_settings.display_device = "None"
             self.label_render_settings()
 
+        # Export the scene before rendering if enabled
+        if self._export_scenes is not None:
+            timestamp = datetime.datetime.now().strftime(
+                "%Y-%m-%d_%H-%M-%S-%f"
+            )
+            export_path = self._export_scenes / f"scene_{timestamp}.blend"
+            export_path.parent.mkdir(parents=True, exist_ok=True)
+            bpy.ops.wm.save_as_mainfile(filepath=str(export_path))
+
         # Render the image.
         bpy.ops.render.render(write_still=True)
 
@@ -351,12 +365,15 @@ class ServerApp(flask.Flask):
         temp_dir,
         blend_file: Path = None,
         bpy_settings_file: Path = None,
+        export_scenes: Path = None,
     ):
         super().__init__("drake_render_gltf_blender")
 
         self._temp_dir = temp_dir
         self._blender = Blender(
-            blend_file=blend_file, bpy_settings_file=bpy_settings_file
+            blend_file=blend_file,
+            bpy_settings_file=bpy_settings_file,
+            export_scenes=export_scenes,
         )
 
         self.add_url_rule("/", view_func=self._root_endpoint)
@@ -487,6 +504,12 @@ def main():
         "The settings file will be applied after loading the --blend_file "
         "(if any) so that it has priority.",
     )
+    parser.add_argument(
+        "--export_scenes",
+        default=None,
+        type=Path,
+        help="Optional path to export the Blender scene before each render.",
+    )
     args = parser.parse_args()
 
     prefix = "drake_blender_"
@@ -495,6 +518,7 @@ def main():
             temp_dir=temp_dir,
             blend_file=args.blend_file,
             bpy_settings_file=args.bpy_settings_file,
+            export_scenes=args.export_scenes,
         )
         app.run(
             host=args.host, port=args.port, debug=args.debug, threaded=False
