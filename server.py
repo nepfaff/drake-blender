@@ -192,11 +192,15 @@ class Blender:
         # Set camera parameters.
         camera = bpy.data.objects.get("Camera Node")
         if camera is None:
-            _logger.error(
-                "Camera node not found. Check the input glTF file "
-                f"'{params.scene}'."
-            )
-            return
+            # This is assuming that the default camera is at a sensible position.
+            # Not sure why Drake sometimes fails to import the camera node...
+            camera = bpy.data.objects.get("Camera")
+            if camera is None:
+                _logger.error(
+                    "No camera node found. Check the input glTF file "
+                    f"'{params.scene}'."
+                )
+                return
 
         scene.camera = camera
         camera.data.show_sensor = True
