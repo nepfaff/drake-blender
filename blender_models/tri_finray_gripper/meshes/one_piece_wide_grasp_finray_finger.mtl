@@ -10,4 +10,5 @@ Ni 1.500000
 d 1.000000
 illum 1
 map_Kd one_piece_wide_grasp_finray_finger_color.png
-map_Bump /home/nepfaff/Downloads/scalingup-master/scalingup/environment/mujoco/assets/finray/one_piece_wide_grasp_finray_finger_normal.png
+map_refl one_piece_wide_grasp_finray_finger_occlusion_roughness_metallic.png
+map_Bump -bm 1.000000 one_piece_wide_grasp_finray_finger_normal.png
