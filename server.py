@@ -164,8 +164,16 @@ class Blender:
             center_override=(0, 0, 0),
         )
 
-        # All imported objects get put in our "client objects" collection.
+        # Create a new collection for imported objects and move them there
+        self._client_objects = bpy.data.collections.new("ClientObjects")
+        bpy.context.scene.collection.children.link(self._client_objects)
+
+        # Move all selected objects (the newly imported ones) to our collection
         for obj in bpy.context.selected_objects:
+            # Unlink from current collections
+            for coll in obj.users_collection:
+                coll.objects.unlink(obj)
+            # Link to our collection
             self._client_objects.objects.link(obj)
 
         # Set rendering parameters.
