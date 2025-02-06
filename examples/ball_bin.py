@@ -14,30 +14,20 @@ import dataclasses as dc
 import logging
 import os
 from pathlib import Path
-import signal
-import socket
-import subprocess
 import tempfile
-import time
 import typing
-
+import time
 from pydrake.common import configure_logging
 from pydrake.common.yaml import yaml_load_typed
 from pydrake.multibody.parsing import (
     ModelDirective,
-    ModelDirectives,
-    ProcessModelDirectives,
 )
-from pydrake.multibody.plant import AddMultibodyPlant, MultibodyPlantConfig
 from pydrake.systems.analysis import (
     ApplySimulatorConfig,
     Simulator,
     SimulatorConfig,
 )
-from pydrake.systems.framework import DiagramBuilder
-from pydrake.systems.lcm import LcmBuses
 from pydrake.systems.sensors import (
-    ApplyCameraConfig,
     CameraConfig,
     ImageWriter,
     PixelType,
@@ -66,16 +56,6 @@ class Scenario:
 
     # Cameras to add to the scene.
     cameras: typing.Mapping[str, CameraConfig] = dc.field(default_factory=dict)
-
-
-# def _find_resource(bazel_path):
-#     """Looks up the path to "runfiles" data, as organized by Bazel."""
-#     manifest = runfiles.Create()
-#     location = manifest.Rlocation(bazel_path)
-#     assert location is not None, f"Not a resource: {bazel_path}"
-#     result = Path(location)
-#     assert result.exists(), f"Missing resource: {bazel_path}"
-#     return result
 
 
 class _ProgressBar:
@@ -117,7 +97,7 @@ def _run(args):
                     pixel_type=PixelType.kRgba8U,
                     port_name="color_image",
                     file_name_format=f"./{name}",
-                    publish_period=1.0,
+                    publish_period=10.0,
                     start_time=0.0,
                 )
                 builder.Connect(
@@ -145,6 +125,7 @@ def _run(args):
 
     # Create the simulator.
     simulator = Simulator(station)
+    simulator.set_target_realtime_rate(1.0)
     ApplySimulatorConfig(scenario.simulator_config, simulator)
 
     # Simulate.
@@ -158,6 +139,8 @@ def _run(args):
         for writer in video_writers:
             writer.Save()
 
+    time.sleep(5.0)
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -170,7 +153,7 @@ def main():
     parser.add_argument(
         "--scenario_file",
         type=Path,
-        default=None,
+        default="examples/ball_bin.yaml",
         help="The absolute path to a scenario file to construct a simulation. "
         "If not provided, `drake_blender/examples/ball_bin.yaml` will be used "
         "by default.",
@@ -189,51 +172,8 @@ def main():
     )
     args = parser.parse_args()
 
-    # if args.scenario_file is None:
-    #     scenario_file = _find_resource("drake_blender/examples/ball_bin.yaml")
-    #     setattr(args, "scenario_file", scenario_file)
-
-    # Launch the server (if requested).
-    if args.server:
-        logging.info("Starting drake-blender server")
-        # server = _find_resource("drake_blender/server")
-        # blend_file = _find_resource("color_attribute_painting/file/downloaded")
-        log_file = open(os.environ["TMPDIR"] + "/server-log.txt", "w")
-        # TODO(jwnimmer-tri) Echo the log file to the console.
-        command = [
-            server,
-            f"--blend_file={blend_file}",
-        ]
-        if args.bpy_settings_file:
-            command.append(f"--bpy_settings_file={args.bpy_settings_file}")
-        server_process = subprocess.Popen(
-            command, stdout=log_file, stderr=subprocess.STDOUT
-        )
-        # Wait until the server is ready.
-        while True:
-            with socket.socket() as s:
-                try:
-                    s.connect(("127.0.0.1", 8000))
-                    # Success!
-                    break
-                except ConnectionRefusedError as e:
-                    time.sleep(0.1)
-            assert server_process.poll() is None
-        logging.info("The drake-blender server is ready")
-    else:
-        server_process = None
-
     # Run the demo.
-    try:
-        _run(args)
-    finally:
-        if server_process is not None:
-            server_process.send_signal(signal.SIGINT)
-            try:
-                server_process.wait(1.0)
-            except subprocess.TimeoutExpired:
-                server_process.terminate()
-            log_file.flush()
+    _run(args)
 
 
 def _wrapped_main():

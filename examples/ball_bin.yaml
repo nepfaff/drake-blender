@@ -17,7 +17,7 @@ directives:
     child: iiwa::iiwa_link_0
     X_PC:
       translation: [0, 0, 0]
-      rotation: !Rpy { deg: [0.0, 0.0, -60.0] }
+      rotation: !Rpy { deg: [0.0, 0.0, 0.0] }
 - add_model:
     name: wsg
     file: package://blender_models/wsg_description/wsg50_110_finray_fingers_box_collision.sdf
@@ -33,6 +33,24 @@ directives:
 - add_weld:
     parent: iiwa::wsg_attach
     child: wsg::body
+- add_model:
+    name: toteA
+    file: package://blender_models/tote/tote.sdf
+- add_weld:
+    parent: world
+    child: toteA::tote_base
+    X_PC:
+      translation: [0, -0.45, 0]
+      rotation: !Rpy { deg: [0.0, 0.0, -90.0] }
+- add_model:
+    name: toteB
+    file: package://blender_models/tote/tote.sdf
+- add_weld:
+    parent: world
+    child: toteB::tote_base
+    X_PC:
+      translation: [0, 0.45, 0]
+      rotation: !Rpy { deg: [0.0, 0.0, 90.0] }
 
 cameras:
     blender_camera:

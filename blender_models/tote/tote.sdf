@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+  <model name="tote">
+    <link name="tote_base">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>package://blender_models/tote/ToteA.L.gltf</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>package://blender_models/tote/ToteA.L.gltf</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

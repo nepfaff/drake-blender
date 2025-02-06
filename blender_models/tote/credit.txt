@@ -1,0 +1,2 @@
+The tote asset was taken from https://github.com/real-stanford/scalingup/tree/master/scalingup/environment/mujoco/assets/custom/tote.
+We thank Huy Ha for releasing this asset.
