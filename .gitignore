@@ -3,3 +3,5 @@
 /.bazel
 /MODULE.bazel.lock
 .venv
+*.blend
+*.blend1

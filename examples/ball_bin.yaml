@@ -51,6 +51,14 @@ directives:
     X_PC:
       translation: [0, 0.45, 0]
       rotation: !Rpy { deg: [0.0, 0.0, 90.0] }
+- add_model:
+    name: mustard
+    file: package://drake_models/ycb/006_mustard_bottle.sdf
+    default_free_body_pose:
+        base_link_mustard:
+            # Middle of workspace
+            translation: [0.5, 0, 0.09515]
+            rotation: !Rpy { deg: [-90, 0, 0]}
 
 cameras:
     blender_camera:

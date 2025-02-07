@@ -191,6 +191,7 @@ class Blender:
 
         # Set camera parameters.
         camera = bpy.data.objects.get("Camera Node")
+        camera = None  # Setting this to None will lead to rendering with the Blender camera.
         if camera is None:
             # This is assuming that the default camera is at a sensible position.
             # Not sure why Drake sometimes fails to import the camera node...
