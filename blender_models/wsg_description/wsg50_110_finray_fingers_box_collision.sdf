@@ -102,9 +102,13 @@
       </visual>
       <collision name="collision">
         <geometry>
-          <box>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://blender_models/tri_finray_gripper/meshes/one_piece_wide_grasp_finray_finger.obj</uri>
+          </mesh>
+          <!-- <box>
             <size>0.012 0.082 0.02</size>
-          </box>
+          </box> -->
         </geometry>
         <surface>
           <friction>
@@ -176,9 +180,13 @@
       </visual>
       <collision name="collision">
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.012 0.082 0.02</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://blender_models/tri_finray_gripper/meshes/one_piece_wide_grasp_finray_finger.obj</uri>
+          </mesh>
         </geometry>
         <surface>
           <friction>
