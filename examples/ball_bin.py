@@ -1,61 +1,23 @@
 # SPDX-License-Identifier: MIT-0
 
-"""
-Demonstrates combining Drake with the Blender render server to create a
-simulation video (or still image).
-
-In this demo, moving objects (some balls) and a fixed object (a bin) are
-simulated by Drake and the static visual background (a room with custom
-lighting) is provided by a Blender file.
-"""
-
 import argparse
-import dataclasses as dc
 import logging
 import os
 from pathlib import Path
 import tempfile
-import typing
 import time
 from pydrake.common import configure_logging
-from pydrake.common.yaml import yaml_load_typed
-from pydrake.multibody.parsing import (
-    ModelDirective,
-)
 from pydrake.systems.analysis import (
     ApplySimulatorConfig,
-    Simulator,
-    SimulatorConfig,
 )
-from pydrake.systems.sensors import (
-    CameraConfig,
-    ImageWriter,
-    PixelType,
-)
+from pydrake.systems.sensors import ImageWriter, PixelType
 from pydrake.visualization import VideoWriter
-from pydrake.all import StartMeshcat
+from pydrake.all import StartMeshcat, Simulator
 
 # from python import runfiles
 import tqdm
 from manipulation.station import MakeHardwareStation, LoadScenario
 from functools import partial
-
-
-@dc.dataclass
-class Scenario:
-    """Defines the YAML format for a scenario to be simulated."""
-
-    # The maximum simulation time (in seconds).
-    simulation_duration: float = 1.0
-
-    # Simulator configuration (integrator and publisher parameters).
-    simulator_config: SimulatorConfig = SimulatorConfig()
-
-    # All of the fully deterministic elements of the simulation.
-    directives: typing.List[ModelDirective] = dc.field(default_factory=list)
-
-    # Cameras to add to the scene.
-    cameras: typing.Mapping[str, CameraConfig] = dc.field(default_factory=dict)
 
 
 class _ProgressBar:
@@ -71,9 +33,7 @@ class _ProgressBar:
 
 def _run(args):
     """Runs the demo."""
-    scenario = yaml_load_typed(
-        schema=Scenario, filename=args.scenario_file, defaults=Scenario()
-    )
+    scenario = LoadScenario(filename=args.scenario_file)
 
     video_writers = []
     for _, camera in scenario.cameras.items():
@@ -111,7 +71,7 @@ def _run(args):
     # Create the scene.
     meshcat = StartMeshcat()
     station = MakeHardwareStation(
-        scenario=LoadScenario(filename=args.scenario_file),
+        scenario=scenario,
         meshcat=meshcat,
         package_xmls=[
             os.path.join(
@@ -143,7 +103,7 @@ def _run(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         "--still",
         action="store_true",
@@ -157,18 +117,6 @@ def main():
         help="The absolute path to a scenario file to construct a simulation. "
         "If not provided, `drake_blender/examples/ball_bin.yaml` will be used "
         "by default.",
-    )
-    parser.add_argument(
-        "--no-server",
-        dest="server",
-        action="store_false",
-        help="Don't automatically launch the blender server.",
-    )
-    parser.add_argument(
-        "--bpy_settings_file",
-        metavar="FILE",
-        help="This flag is forward along to the server, unchanged. "
-        "Refer to its documentation for details.",
     )
     args = parser.parse_args()
 
