@@ -135,9 +135,9 @@ cameras:
 # python3 -m pydrake.visualization.model_visualizer package://drake_models/iiwa_description/sdf/iiwa14_polytope_collision.sdf
 iiwa_positions = {
     "neutral": [0, -0.5, 0, -1.5, 0, 1.6, 0],
-    "pick_bin_a": [-1.57, 0.2, 0, -2, 0, 1, 0.9],
+    "pick_bin_a": [1.65, 0.2, 0, -2, 0, 1, 0.9],
     "scanning": [1.5, 1.1, 1.8, 1.9, 0.5, -0.83, -1.8],
-    "place_bin_b": [1.57, 0.18, -0.1, -2, 0, 1, 0.9],
+    "place_bin_b": [-1.55, 0.22, -0.1, -2, 0, 1, 0.9],
 }
 wsg_positions = {
     "neutral": [0.06],
@@ -283,7 +283,7 @@ def _run(args):
             body=plant.GetBodyByName("body"),
         )
         X_GM = RigidTransform(
-            p=[0.0, 0.25, 0.0],
+            p=[0.0, 0.255, 0.0],
             rpy=RollPitchYaw(0.0, np.pi / 2, 0.0),
         )
         X_WM = X_WG @ X_GM
