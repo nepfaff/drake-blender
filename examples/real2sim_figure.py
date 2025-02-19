@@ -141,7 +141,7 @@ wsg_positions = {
     "place_bin_b": [0.05],
     "sys_id": [0.03],
 }
-system_id_traj_parameter_path = "system_id_traj"
+system_id_traj_parameter_path = "system_id_traj2"
 system_id_traj_time_horizon = 10.0
 
 

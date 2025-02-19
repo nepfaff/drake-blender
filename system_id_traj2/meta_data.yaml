@@ -1,0 +1,50 @@
+AL Iteration: 5
+Cost function value: 329.4847318893092
+Max absolute lambda: 15.05764012908951
+Mean absolute lambda: 0.022293998096136206
+_runtime: 30936.066220521927
+_step: 150018
+_timestamp: 1739664793.8962066
+al_iter0:
+  _type: html-file
+  path: media/html/al_iter0_3_9187dcbcd3d3c6220778.html
+  sha256: 9187dcbcd3d3c62207781676d5712fc7c8aaccffa37c9b6a9e811d1a02baca94
+  size: 8545906
+al_iter1:
+  _type: html-file
+  path: media/html/al_iter1_7_c186b941d10bdb732daa.html
+  sha256: c186b941d10bdb732daa2e318a47b50221d806aebb2199addf632e3b6a00fdd8
+  size: 8545906
+al_iter2:
+  _type: html-file
+  path: media/html/al_iter2_11_6489a8c7fbcee69ba560.html
+  sha256: 6489a8c7fbcee69ba560b88975df36c3742812fbe7236575dc1c8d420d179803
+  size: 8545906
+al_iter3:
+  _type: html-file
+  path: media/html/al_iter3_15_faa7fd67a48feeff4e48.html
+  sha256: faa7fd67a48feeff4e48bbb2f44483b7275bcbada2c91f525217ae5829664ffe
+  size: 8545906
+augmented Lagrangian loss: 386.00615107435493
+condition_number: 331.9442987098039
+constraint_violation_accelerationBound: 0
+constraint_violation_collisionAvoidance: 70
+constraint_violation_endAcceleration: 7
+constraint_violation_endVelocity: 7
+constraint_violation_positionBound: 235
+constraint_violation_startAcceleration: 7
+constraint_violation_startVelocity: 7
+constraint_violation_velocityBound: 272
+e_optimality: -1602.2298050999573
+equality_constraint_error: 3.1776146049407816
+inequality_constraint_error: 9.895369258868184
+mu: 25.3125
+nevergrad_set_bounds: false
+num_constraint_violations: 605
+num_constraints: 22028
+num_identifiable_params: 43
+num_params: 70
+optimizer_name: NGOpt
+parametrization_name: Array{(77,)}
+sub-optim: CMAstd
+total_constraint_error: 13.072983863808966
